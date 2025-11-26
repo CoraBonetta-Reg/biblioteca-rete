@@ -1,0 +1,6 @@
+ID;codice;nome;indirizzo;citta;cap;provincia;paese_code;telefono;email;sitoWeb;orariApertura
+550e8400-e29b-41d4-a716-446655440401;BIB-MI-01;Biblioteca Comunale di Milano;Via Serbelloni 10;Milano;20122;MI;IT;02-12345678;info@bibliotecamilano.it;https://bibliotecamilano.it;Lun-Ven 9-19, Sab 9-13
+550e8400-e29b-41d4-a716-446655440402;BIB-RM-01;Biblioteca Nazionale Centrale Roma;Viale Castro Pretorio 105;Roma;00185;RM;IT;06-98765432;info@bncrm.it;https://bncrm.it;Lun-Ven 8:30-18:00
+550e8400-e29b-41d4-a716-446655440403;BIB-FI-01;Biblioteca Comunale Centrale Firenze;Via Sant'Egidio 21;Firenze;50122;FI;IT;055-2616512;info@bibliotecafirenze.it;https://bibliotecafirenze.it;Lun-Sab 9-19
+550e8400-e29b-41d4-a716-446655440404;BIB-TO-01;Biblioteca Civica Centrale Torino;Via della Cittadella 5;Torino;10122;TO;IT;011-4431111;info@bibliotecatorino.it;https://bibliotecatorino.it;Lun-Ven 9:30-19, Sab 9-13
+550e8400-e29b-41d4-a716-446655440405;BIB-NA-01;Biblioteca Nazionale di Napoli;Piazza del Plebiscito 1;Napoli;80132;NA;IT;081-7819111;info@bnnapoli.it;https://bnnapoli.it;Lun-Ven 8:30-19:00

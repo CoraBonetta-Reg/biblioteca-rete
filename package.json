@@ -1,0 +1,35 @@
+{
+  "name": "biblioteca-rete",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "dependencies": {
+    "@sap/cds": "^9",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^2",
+    "@sap/ux-ui5-tooling": "^1.19.5",
+    "cds-plugin-ui5": "^0.13.0"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-titoli": "cds watch --open biblioteca.rete.titoli/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-autori": "cds watch --open biblioteca.rete.autori/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-biblioteche": "cds watch --open biblioteca.rete.biblioteche/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-copie": "cds watch --open biblioteca.rete.copie/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-case-editrici": "cds watch --open biblioteca.rete.caseeditrici/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-categorie": "cds watch --open biblioteca.rete.categorie/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "private": true,
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/titoli",
+    "app/autori",
+    "app/biblioteche",
+    "app/copie",
+    "app/case-editrici",
+    "app/categorie"
+  ]
+}

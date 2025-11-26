@@ -1,0 +1,7 @@
+ID;codice;nome;descrizione;parent_ID
+550e8400-e29b-41d4-a716-446655440201;NAR;Narrativa;Opere di narrativa;
+550e8400-e29b-41d4-a716-446655440202;NAR-ROM;Romanzi;Romanzi di narrativa;550e8400-e29b-41d4-a716-446655440201
+550e8400-e29b-41d4-a716-446655440203;NAR-RAC;Racconti;Raccolte di racconti;550e8400-e29b-41d4-a716-446655440201
+550e8400-e29b-41d4-a716-446655440204;SAG;Saggistica;Opere di saggistica;
+550e8400-e29b-41d4-a716-446655440205;SAG-FIL;Filosofia;Saggi di filosofia;550e8400-e29b-41d4-a716-446655440204
+550e8400-e29b-41d4-a716-446655440206;SAG-STO;Storia;Saggi storici;550e8400-e29b-41d4-a716-446655440204

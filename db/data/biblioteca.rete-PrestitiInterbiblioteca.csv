@@ -1,0 +1,4 @@
+ID;numeroPrestito;dataRichiesta;dataInvio;dataRicezione;dataRestituzionePrevista;dataRestituzioneEffettiva;stato;note;copia_ID;bibliotecaOrigine_ID;bibliotecaDestinazione_ID;richiedente
+550e8400-e29b-41d4-a716-446655440601;PREST-2024-001;2024-11-01;2024-11-03;2024-11-05;2024-12-05;;ricevuto;Prestito per studio ricerca;550e8400-e29b-41d4-a716-446655440503;550e8400-e29b-41d4-a716-446655440402;550e8400-e29b-41d4-a716-446655440401;Dott. Mario Rossi
+550e8400-e29b-41d4-a716-446655440602;PREST-2024-002;2024-11-10;2024-11-12;;2024-12-12;;in_transito;In attesa di conferma ricezione;550e8400-e29b-41d4-a716-446655440504;550e8400-e29b-41d4-a716-446655440403;550e8400-e29b-41d4-a716-446655440404;Prof.ssa Anna Bianchi
+550e8400-e29b-41d4-a716-446655440603;PREST-2024-003;2024-11-15;;;2024-12-15;;richiesto;Richiesta in attesa di approvazione;550e8400-e29b-41d4-a716-446655440506;550e8400-e29b-41d4-a716-446655440405;550e8400-e29b-41d4-a716-446655440403;Dott. Luigi Verdi

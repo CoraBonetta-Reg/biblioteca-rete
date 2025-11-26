@@ -1,0 +1,29 @@
+{
+  "generationParameters": {
+    "generationDate": "Wed Nov 26 2025 23:34:20 GMT+0100 (Ora standard dell’Europa centrale)",
+    "generatorPlatform": "CLI",
+    "serviceType": "Local CAP",
+    "metadataFilename": "",
+    "serviceUrl": "http://localhost:4004/odata/v4/biblioteca/",
+    "appName": "biblioteche",
+    "appTitle": "Gestione Biblioteche",
+    "appDescription": "Applicazione per la gestione delle biblioteche della rete",
+    "appNamespace": "biblioteca.rete",
+    "ui5Theme": "sap_horizon",
+    "ui5Version": "1.136.7",
+    "enableCodeAssist": false,
+    "enableEslint": false,
+    "enableTypeScript": false,
+    "showMockDataInfo": false,
+    "generatorVersion": "1.19.3",
+    "template": "List Report Page V4",
+    "generatorName": "SAP Fiori Application Generator",
+    "entityRelatedConfig": [
+      {
+        "type": "Main Entity",
+        "value": "Biblioteche"
+      }
+    ],
+    "launchText": "To launch the generated app, start your CAP project:  and navigate to the following location in your browser:\n\nhttp://localhost:4004/biblioteche/webapp/index.html"
+  }
+}
