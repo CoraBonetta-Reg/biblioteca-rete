@@ -3,12 +3,13 @@
 
 # Instruction files to apply
 instructions:
-  # User-level instructions for CAP, Fiori, and UI5 development
-  - vscode-userdata:/c%3A/Users/bonetta/AppData/Roaming/Code/User/prompts/cap-mcp-server.instructions.md
-  - vscode-userdata:/c%3A/Users/bonetta/AppData/Roaming/Code/User/prompts/fiori-mcp-server.instructions.md
-  - vscode-userdata:/c%3A/Users/bonetta/AppData/Roaming/Code/User/prompts/ui5-mcp-server.instructions.md
+  # MCP server instructions (detailed workflows and tool usage)
+  - .github/instructions/cap-mcp-server.md
+  - .github/instructions/fiori-mcp-server.md
+  - .github/instructions/ui5-mcp-server.md
+  - .github/instructions/mcp-servers.md
   
-  # Repository-specific instructions
+  # Repository-specific instructions (architecture, patterns, conventions)
   - .github/copilot-instructions.md
 
 # Project description
@@ -94,34 +95,53 @@ naming:
   csv_files: "namespace-EntityName.csv (e.g., biblioteca.rete-Titoli.csv)"
   i18n_keys: "camelCase (e.g., titolo, casaEditrice)"
 
-# MCP Server requirements
+# MCP Server Configuration
+# Note: GitHub Copilot Coding Agent running on GitHub cannot access local MCP servers.
+# This section documents the MCP servers used in local development and provides
+# alternative workflows for the coding agent.
+#
+# For detailed MCP configuration and usage, see .github/instructions/mcp-servers.md
+
 mcp_servers:
-  required:
+  note: |
+    MCP servers are not available to GitHub Copilot Coding Agent.
+    The instruction files (.github/instructions/*.md) provide workflows and guidance
+    that replicate MCP functionality through codebase search and pattern matching.
+  
+  documented_servers:
     - name: "cds-mcp"
       purpose: "CAP/CDS documentation and model search"
-      mandatory_before:
-        - "Modifying .cds files"
-        - "Adding new entities"
-        - "Changing service definitions"
-      tools:
-        - "search_docs: Query CAP documentation"
-        - "search_model: Find entities/services in project"
+      local_usage: "Search CAP docs and query CDS models"
+      github_alternative: |
+        - Search existing .cds files for patterns
+        - Read DOCUMENTATION.md for architecture
+        - Use 'cds compile srv' to validate changes
+      instruction_file: ".github/instructions/cap-mcp-server.md"
         
     - name: "fiori-mcp"
       purpose: "Fiori Elements generation and modification"
-      workflow: "3-step (list_functionality → get_functionality_details → execute_functionality)"
-      tools:
-        - "list_functionality: Discover available operations"
-        - "get_functionality_details: Get parameters"
-        - "execute_functionality: Generate/modify apps"
-        - "search_docs: Fiori/Annotations documentation"
+      local_usage: "3-step workflow to generate/modify Fiori apps"
+      github_alternative: |
+        - Study existing annotations.cds files for patterns
+        - Read DOCUMENTATION.md for UI annotation patterns
+        - Manually edit annotations following existing structure
+      instruction_file: ".github/instructions/fiori-mcp-server.md"
         
     - name: "ui5-mcp"
       purpose: "UI5 best practices and API reference"
-      tools:
-        - "get_guidelines: UI5 coding standards"
-        - "get_api_reference: UI5 API documentation"
-        - "create_ui5_app: Alternative app generation (not used, prefer fiori-mcp)"
+      local_usage: "Get guidelines and search UI5 API"
+      github_alternative: |
+        - Follow patterns in existing Component.js files
+        - Reference SAPUI5 documentation: https://ui5.sap.com/
+        - Check DOCUMENTATION.md for UI5 usage patterns
+      instruction_file: ".github/instructions/ui5-mcp-server.md"
+  
+  best_practices_without_mcp:
+    - "Search codebase for similar patterns before implementing"
+    - "Read DOCUMENTATION.md and copilot-instructions.md for guidance"
+    - "Validate all CDS changes with 'cds compile srv'"
+    - "Test changes with 'npm run watch-{appname}'"
+    - "Follow existing naming conventions and file structure"
 
 # Development workflows
 workflows:
