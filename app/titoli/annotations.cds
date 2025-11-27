@@ -1,5 +1,29 @@
 using BibliotecaService as service from '../../srv/biblioteca-service';
 
+/**
+ * UI ANNOTATIONS FOR TITOLI APP
+ * 
+ * STRUCTURE:
+ * 1. UI.HeaderInfo: Object Page header (titolo invece di UUID)
+ * 2. UI.LineItem: Colonne tabella List Report
+ * 3. UI.FieldGroup: Campi form Object Page
+ * 4. UI.Facets: Layout Object Page (sezioni e tabelle correlate)
+ * 5. Qualified LineItems (#Autori, #Copie): Tabelle correlate nei facets
+ * 
+ * CRITICAL PATTERN:
+ * - Usare navigation properties (casaEditrice.nome) NON _ID fields
+ * - @Common.Text nel servizio garantisce display human-readable
+ * - Entity-level annotations (Capabilities) causano errori se duplicate
+ */
+
+// =============================================================================
+// HEADERINFO: Object Page Title
+// =============================================================================
+// Pattern: Mostra campo descrittivo (titolo) invece di ID nel breadcrumb
+// Title: Campo principale visibile
+// Description: Campo secondario (sotto il titolo)
+// =============================================================================
+
 annotate service.Titoli with @(
     UI.HeaderInfo : {
         TypeName : 'Titolo',
@@ -13,6 +37,14 @@ annotate service.Titoli with @(
             Value : isbn,
         }
     },
+    
+    // =========================================================================
+    // LINEITEM: Colonne Tabella List Report
+    // =========================================================================
+    // Pattern: Ogni DataField = una colonna
+    // CRITICAL: Usare navigation properties (casaEditrice.nome) NON _ID
+    // =========================================================================
+    
     UI.LineItem : [
         {
             $Type : 'UI.DataField',
@@ -41,6 +73,14 @@ annotate service.Titoli with @(
         },
     ]
 );
+
+// =============================================================================
+// FIELDGROUP: Campi Form Object Page
+// =============================================================================
+// Pattern: Raggruppamento logico di campi per form editing
+// #GeneralInformation: Nome qualificatore (usato nei Facets)
+// CRITICAL: Usare navigation properties per human-readable display
+// =============================================================================
 
 annotate service.Titoli with @(
     UI.FieldGroup #GeneralInformation : {
@@ -93,12 +133,25 @@ annotate service.Titoli with @(
             },
         ],
     },
+    
+    // =========================================================================
+    // FACETS: Layout Object Page
+    // =========================================================================
+    // Pattern: Definisce sezioni (tabs) nell'Object Page
+    // - ReferenceFacet: Riferimento a FieldGroup o navigation con LineItem
+    // - Target '@UI.FieldGroup#...': Riferimento a FieldGroup definito sopra
+    // - Target 'navigation/@UI.LineItem#...': Tabella correlata (qualified)
+    // 
+    // CRITICAL: LineItem qualificati (#Autori, #Copie) evitano conflitti
+    // quando stessa entity appare in più app con configurazioni diverse
+    // =========================================================================
+    
     UI.Facets : [
         {
             $Type : 'UI.ReferenceFacet',
             ID : 'GeneralInformationFacet',
             Label : 'Informazioni Generali',
-            Target : '@UI.FieldGroup#GeneralInformation',
+            Target : '@UI.FieldGroup#GeneralInformation',  // Link a FieldGroup sopra
         },
         {
             $Type : 'UI.ReferenceFacet',
@@ -115,8 +168,21 @@ annotate service.Titoli with @(
     ]
 );
 
+// =============================================================================
+// QUALIFIED LINEITEM: Tabelle Correlate nei Facets
+// =============================================================================
+// Pattern: LineItem #Qualificatore per configurazioni specifiche per contesto
+// #Autori: Configurazione specifica per tabella autori dentro Titoli app
+// #Copie: Configurazione specifica per tabella copie dentro Titoli app
+// 
+// PERCHÉ QUALIFIED:
+// - TitoliAutori appare sia in Titoli app che in Autori app
+// - Ogni app può avere colonne diverse → serve qualificatore
+// - Senza qualificatore: conflitti se configurazioni diverse
+// =============================================================================
+
 annotate service.TitoliAutori with @(
-    UI.LineItem #Autori : [
+    UI.LineItem #Autori : [  // #Autori = qualificatore per questa vista
         {
             $Type : 'UI.DataField',
             Label : 'Nome',

@@ -3,15 +3,31 @@ using {biblioteca.rete as db} from '../db/schema';
 /**
  * Servizio per la gestione della rete bibliotecaria
  * 
- * Questo servizio espone le entità principali per:
- * - Consultare il catalogo dei titoli disponibili
- * - Gestire le biblioteche della rete
- * - Monitorare i prestiti interbiblioteca
+ * ARCHITECTURE NOTES:
+ * - Espone 8 entità del dominio come OData V4 entities
+ * - Tutte le entità sono @odata.draft.enabled per editing collaborativo
+ * - i18n configurato per supporto multilingua (IT/EN)
+ * - Annotazioni @Common.Text per display human-readable (no UUID visibili)
+ * - Annotazioni @Common.ValueList per dropdown F4 help
+ * - Annotazioni @Core.Immutable su chiavi critiche per integrità dati
+ * 
+ * ENDPOINT BASE: http://localhost:4004/biblioteca/
+ * METADATA: http://localhost:4004/biblioteca/$metadata
  */
 @i18n: '../_i18n/i18n'
 service BibliotecaService {
 
-  /** Catalogo dei titoli con informazioni complete */
+  /**
+   * Catalogo dei titoli con informazioni complete
+   * 
+   * DRAFT MODE: Abilitato per permettere:
+   * - Salvataggio incrementale senza pubblicare
+   * - Editing collaborativo con conflict resolution
+   * - Rollback modifiche senza impatto su dati attivi
+   * 
+   * CRITICAL: Le entità correlate (autori, copie) NON possono essere
+   * create/modificate inline da draft - gestirle nelle loro app dedicate
+   */
   @odata.draft.enabled
   entity Titoli as projection on db.Titoli;
 
@@ -44,7 +60,14 @@ service BibliotecaService {
   entity TitoliAutori as projection on db.TitoliAutori;
 }
 
-// Field labels
+// =============================================================================
+// FIELD LABELS WITH i18n
+// =============================================================================
+// Pattern: @title: '{i18n>key}' per tutte le label
+// Files: _i18n/i18n.properties (EN), _i18n/i18n_it.properties (IT)
+// Runtime: Label si adatta automaticamente alla lingua del browser
+// =============================================================================
+
 annotate BibliotecaService.Titoli with {
   titolo @title: '{i18n>titolo}';
   sottotitolo @title: '{i18n>sottotitolo}';
@@ -53,8 +76,17 @@ annotate BibliotecaService.Titoli with {
   lingua @title: '{i18n>lingua}';
   numeroPagine @title: '{i18n>numeroPagine}';
   descrizione @title: '{i18n>descrizione}';
-  casaEditrice @title: '{i18n>casaEditrice}' @Common.Text: casaEditrice.nome @Common.TextArrangement: #TextOnly;
-  categoria @title: '{i18n>categoria}' @Common.Text: categoria.nome @Common.TextArrangement: #TextOnly;
+  
+  // HUMAN-READABLE DISPLAY PATTERN:
+  // @Common.Text: Specifica quale campo mostrare invece dell'ID
+  // @Common.TextArrangement: #TextOnly nasconde completamente l'ID
+  // Result: User vede "Einaudi" invece di "550e8400-e29b-41d4-a716-446655440001"
+  casaEditrice @title: '{i18n>casaEditrice}' 
+               @Common.Text: casaEditrice.nome 
+               @Common.TextArrangement: #TextOnly;
+  categoria @title: '{i18n>categoria}' 
+            @Common.Text: categoria.nome 
+            @Common.TextArrangement: #TextOnly;
 };
 
 annotate BibliotecaService.Autori with {
@@ -123,8 +155,23 @@ annotate BibliotecaService.TitoliAutori with {
   ruolo @title: '{i18n>ruolo}';
 };
 
-// Value Help annotations
+// =============================================================================
+// VALUE HELP (F4) CONFIGURATION
+// =============================================================================
+// Pattern: @Common.ValueList definisce dropdown con campi visibili
+// @Common.ValueListWithFixedValues: CRITICAL - disabilita input manuale UUID
+// Without this, users can type random UUIDs causing data integrity issues
+// =============================================================================
+
 annotate BibliotecaService.Titoli with {
+  // VALUE HELP PATTERN:
+  // 1. Label: Titolo del dropdown popup
+  // 2. CollectionPath: Entity set da cui caricare i valori
+  // 3. Parameters:
+  //    - ValueListParameterInOut: Campo chiave (ID) - binding bidirezionale
+  //    - ValueListParameterDisplayOnly: Campi descrittivi visibili (nome, paese)
+  // 4. @Common.ValueListWithFixedValues: FORZA selezione da dropdown (no input manuale)
+  
   casaEditrice @Common.ValueList : {
     Label: 'Case Editrici',
     CollectionPath: 'CaseEditrici',
@@ -134,7 +181,7 @@ annotate BibliotecaService.Titoli with {
       { $Type: 'Common.ValueListParameterDisplayOnly', ValueListProperty: 'paese_code' }
     ]
   }
-  @Common.ValueListWithFixedValues;
+  @Common.ValueListWithFixedValues;  // CRITICAL: Previene input UUID manuale
   categoria @Common.ValueList : {
     Label: 'Categorie',
     CollectionPath: 'Categorie',
@@ -146,6 +193,18 @@ annotate BibliotecaService.Titoli with {
   }
   @Common.ValueListWithFixedValues;
 };
+
+// =============================================================================
+// IMMUTABILITY CONSTRAINTS
+// =============================================================================
+// @Core.Immutable: Campo non modificabile dopo creazione
+// CRITICAL for junction tables e foreign keys critiche
+// Prevents accidental changes that would break data integrity/history
+// Applied to:
+// - TitoliAutori: titolo, autore (junction table keys)
+// - Copie: titolo, biblioteca (physical inventory tracking)
+// - PrestitiInterbiblioteca: all associations (historical tracking)
+// =============================================================================
 
 annotate BibliotecaService.TitoliAutori with {
   titolo @Common.ValueList : {
@@ -159,7 +218,7 @@ annotate BibliotecaService.TitoliAutori with {
     ]
   }
   @Common.ValueListWithFixedValues
-  @Core.Immutable;
+  @Core.Immutable;  // CRITICAL: Non modificabile dopo creazione (junction table key)
   autore @Common.ValueList : {
     Label: 'Autori',
     CollectionPath: 'Autori',
@@ -170,7 +229,7 @@ annotate BibliotecaService.TitoliAutori with {
     ]
   }
   @Common.ValueListWithFixedValues
-  @Core.Immutable;
+  @Core.Immutable;  // CRITICAL: Non modificabile dopo creazione (junction table key)
 };
 
 annotate BibliotecaService.Categorie with {
