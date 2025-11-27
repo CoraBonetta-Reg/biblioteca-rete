@@ -1,0 +1,210 @@
+# GitHub Copilot Workspace Configuration
+# Sistema Gestione Rete Bibliotecaria - Biblioteca-Rete
+
+# Instruction files to apply
+instructions:
+  # User-level instructions for CAP, Fiori, and UI5 development
+  - vscode-userdata:/c%3A/Users/bonetta/AppData/Roaming/Code/User/prompts/cap-mcp-server.instructions.md
+  - vscode-userdata:/c%3A/Users/bonetta/AppData/Roaming/Code/User/prompts/fiori-mcp-server.instructions.md
+  - vscode-userdata:/c%3A/Users/bonetta/AppData/Roaming/Code/User/prompts/ui5-mcp-server.instructions.md
+  
+  # Repository-specific instructions
+  - .github/copilot-instructions.md
+
+# Project description
+description: |
+  SAP Cloud Application Programming (CAP) application for managing a library network
+  with shared catalog and interlibrary loan system. Built with CAP v9, Fiori Elements,
+  OData V4, and supporting Italian/English localization.
+
+# Key technologies
+technologies:
+  - SAP CAP v9
+  - SAP Fiori Elements 1.136.7
+  - OData V4
+  - Node.js
+  - SQLite (development)
+  - CDS (Core Data Services)
+
+# Development environment
+environment:
+  node_version: ">=18"
+  package_manager: npm
+  database: sqlite
+  runtime: nodejs
+
+# Critical patterns (enforced)
+patterns:
+  annotation_distribution:
+    description: "Service-level metadata in srv/, UI annotations in app/"
+    service_file: "srv/biblioteca-service.cds"
+    app_files: "app/*/annotations.cds"
+    
+  human_readable_display:
+    strategy: "3-tier"
+    tier_1: "@Common.Text + @Common.TextArrangement at service level"
+    tier_2: "Navigation properties in UI (e.g., casaEditrice.nome)"
+    tier_3: "UI.HeaderInfo with descriptive Title"
+    
+  value_help:
+    pattern: "@Common.ValueList + @Common.ValueListWithFixedValues"
+    enforcement: "MANDATORY on all associations to prevent UUID input"
+    
+  immutability:
+    pattern: "@Core.Immutable on critical foreign keys"
+    applies_to:
+      - "TitoliAutori (titolo_ID, autore_ID)"
+      - "Copie (titolo_ID, biblioteca_ID)"
+      - "PrestitiInterbiblioteca (all associations)"
+    
+  draft_mode:
+    enabled: true
+    limitation: "Cannot inline-edit related entities from draft"
+    workaround: "Use dedicated apps for related entities"
+
+# Common pitfalls to avoid
+pitfalls:
+  - name: "Duplicate entity-level annotations"
+    description: "Capabilities/UI visibility annotations cannot be duplicated across app files"
+    solution: "Centralize in service file or accept limitations"
+    
+  - name: "UUID fields in UI"
+    description: "Using *_ID fields in LineItem/FieldGroup shows UUIDs"
+    solution: "Always use navigation properties (e.g., casaEditrice.nome)"
+    
+  - name: "Missing TextArrangement"
+    description: "Using @Common.Text without @Common.TextArrangement"
+    solution: "Always pair with @Common.TextArrangement: #TextOnly"
+    
+  - name: "CSV foreign key naming"
+    description: "CSV columns must use *_ID suffix for associations"
+    solution: "casaEditrice_ID not casaEditrice_code"
+    
+  - name: "Missing ValueListWithFixedValues"
+    description: "Users can type UUIDs manually"
+    solution: "Add @Common.ValueListWithFixedValues on all associations"
+
+# Naming conventions
+naming:
+  entities: "PascalCase, plural (e.g., Titoli, Autori)"
+  fields: "camelCase (e.g., titolo, annoPubblicazione)"
+  associations: "camelCase, singular (e.g., casaEditrice, biblioteca)"
+  services: "PascalCase + Service (e.g., BibliotecaService)"
+  apps: "lowercase (e.g., titoli, autori)"
+  csv_files: "namespace-EntityName.csv (e.g., biblioteca.rete-Titoli.csv)"
+  i18n_keys: "camelCase (e.g., titolo, casaEditrice)"
+
+# MCP Server requirements
+mcp_servers:
+  required:
+    - name: "cds-mcp"
+      purpose: "CAP/CDS documentation and model search"
+      mandatory_before:
+        - "Modifying .cds files"
+        - "Adding new entities"
+        - "Changing service definitions"
+      tools:
+        - "search_docs: Query CAP documentation"
+        - "search_model: Find entities/services in project"
+        
+    - name: "fiori-mcp"
+      purpose: "Fiori Elements generation and modification"
+      workflow: "3-step (list_functionality → get_functionality_details → execute_functionality)"
+      tools:
+        - "list_functionality: Discover available operations"
+        - "get_functionality_details: Get parameters"
+        - "execute_functionality: Generate/modify apps"
+        - "search_docs: Fiori/Annotations documentation"
+        
+    - name: "ui5-mcp"
+      purpose: "UI5 best practices and API reference"
+      tools:
+        - "get_guidelines: UI5 coding standards"
+        - "get_api_reference: UI5 API documentation"
+        - "create_ui5_app: Alternative app generation (not used, prefer fiori-mcp)"
+
+# Development workflows
+workflows:
+  start_server:
+    command: "npm start"
+    alternative: "cds watch"
+    url: "http://localhost:4004"
+    
+  compile_check:
+    command: "npx cds compile srv"
+    windows: "npx cds compile srv 2>&1 | Select-String -Pattern 'error'"
+    
+  run_specific_app:
+    pattern: "npm run watch-{appname}"
+    examples:
+      - "npm run watch-titoli"
+      - "npm run watch-autori"
+      - "npm run watch-biblioteche"
+      
+  add_new_entity:
+    steps:
+      - "Define in db/schema.cds with cuid, managed aspects"
+      - "Add projection in srv/biblioteca-service.cds with @odata.draft.enabled"
+      - "Add field labels with @title: '{i18n>key}'"
+      - "Add @Common.Text + @Common.TextArrangement for associations"
+      - "Add @Common.ValueList + @Common.ValueListWithFixedValues"
+      - "Update i18n files (_i18n/i18n.properties, _i18n/i18n_it.properties)"
+      - "Create CSV in db/data/biblioteca.rete-{EntityName}.csv"
+      - "Generate Fiori app using fiori-mcp"
+      - "Add UI annotations in app/{appname}/annotations.cds"
+
+# File structure
+structure:
+  database: "db/schema.cds"
+  service: "srv/biblioteca-service.cds"
+  i18n:
+    - "_i18n/i18n.properties (English)"
+    - "_i18n/i18n_it.properties (Italian)"
+  data: "db/data/biblioteca.rete-*.csv (semicolon-separated)"
+  apps: "app/*/annotations.cds"
+  
+# Key files to reference
+reference_files:
+  architecture: "DOCUMENTATION.md"
+  development_process: "DEVELOPMENT_REPORT.md"
+  user_guide: "README.md"
+  ai_instructions: ".github/copilot-instructions.md"
+
+# Testing
+testing:
+  metadata: "http://localhost:4004/biblioteca/$metadata"
+  service: "http://localhost:4004/biblioteca/"
+  compile: "npx cds compile srv"
+  
+# Data format
+data:
+  csv_separator: "semicolon (;)"
+  encoding: "UTF-8"
+  uuid_format: "Standard UUID v4 (8-4-4-4-12)"
+  foreign_keys: "Must use *_ID suffix"
+  example: "ID;titolo;isbn;casaEditrice_ID;categoria_ID"
+
+# Localization
+localization:
+  default_language: "English"
+  supported:
+    - "it (Italian)"
+    - "en (English)"
+  localized_fields:
+    - "Titoli.titolo"
+    - "Titoli.descrizione"
+    - "Autori.biografia"
+    - "Categorie.nome"
+    - "Categorie.descrizione"
+  pattern: "localized String(N)"
+  storage: "{Entity}_texts table with locale column"
+
+# Git workflow
+git:
+  main_branch: "main"
+  commit_style: "Conventional Commits"
+  examples:
+    - "feat: Add new entity"
+    - "fix: Correct annotation duplicate error"
+    - "docs: Update documentation"
+    - "refactor: Improve code structure"
