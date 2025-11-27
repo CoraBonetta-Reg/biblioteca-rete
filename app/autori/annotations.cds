@@ -87,14 +87,7 @@ annotate service.Autori with @(
             Target : 'titoli/@UI.LineItem#Titoli',
         },
     ]
-) {
-    // Disable inline editing of titoli association in Autori context
-    titoli @(
-        Capabilities.InsertRestrictions.Insertable : false,
-        Capabilities.UpdateRestrictions.Updatable : false,
-        Capabilities.DeleteRestrictions.Deletable : false
-    );
-};
+);
 
 annotate service.TitoliAutori with @(
     UI.LineItem #Titoli : [
@@ -131,3 +124,16 @@ annotate service.TitoliAutori with @(
     }
     @Common.ValueListWithFixedValues;
 };
+
+// Make titoli association read-only when accessed from Autori
+annotate service.Autori:titoli with @(
+    Capabilities.InsertRestrictions : {
+        Insertable : false
+    },
+    Capabilities.UpdateRestrictions : {
+        Updatable : false
+    },
+    Capabilities.DeleteRestrictions : {
+        Deletable : false
+    }
+);
