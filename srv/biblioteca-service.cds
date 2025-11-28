@@ -67,16 +67,17 @@ service BibliotecaService {
 // Users must use dedicated Autori and Copie apps for modifications
 // =============================================================================
 
-annotate BibliotecaService.Titoli with @Capabilities.NavigationRestrictions #autori : {
-  InsertRestrictions : {Insertable : false},
-  UpdateRestrictions : {Updatable : false},
-  DeleteRestrictions : {Deletable : false}
-};
-
-annotate BibliotecaService.Titoli with @Capabilities.NavigationRestrictions #copie : {
-  InsertRestrictions : {Insertable : false},
-  UpdateRestrictions : {Updatable : false},
-  DeleteRestrictions : {Deletable : false}
+annotate BibliotecaService.Titoli with {
+  autori @Capabilities : {
+    InsertRestrictions : {Insertable : false},
+    UpdateRestrictions : {Updatable : false},
+    DeleteRestrictions : {Deletable : false}
+  };
+  copie @Capabilities : {
+    InsertRestrictions : {Insertable : false},
+    UpdateRestrictions : {Updatable : false},
+    DeleteRestrictions : {Deletable : false}
+  };
 };
 
 // =============================================================================
