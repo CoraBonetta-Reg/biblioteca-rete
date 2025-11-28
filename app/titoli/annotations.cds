@@ -166,19 +166,7 @@ annotate service.Titoli with @(
             Target : 'copie/@UI.LineItem#Copie',
         },
     ]
-) {
-    // Restrict inline operations on navigation properties
-    autori @Capabilities : {
-        InsertRestrictions : {Insertable : false},
-        UpdateRestrictions : {Updatable : false},
-        DeleteRestrictions : {Deletable : false}
-    };
-    copie @Capabilities : {
-        InsertRestrictions : {Insertable : false},
-        UpdateRestrictions : {Updatable : false},
-        DeleteRestrictions : {Deletable : false}
-    };
-};
+);
 
 // =============================================================================
 // QUALIFIED LINEITEM: Tabelle Correlate nei Facets
@@ -192,12 +180,12 @@ annotate service.Titoli with @(
 // - Ogni app può avere colonne diverse → serve qualificatore
 // - Senza qualificatore: conflitti se configurazioni diverse
 //
-// READ-ONLY MODE (Capabilities Restrictions):
-// - Capabilities.InsertRestrictions, UpdateRestrictions, DeleteRestrictions
-//   sono applicate alle navigation properties (autori, copie) in Titoli entity
-// - Questo disabilita inline create, update, delete nelle tabelle dei facets
+// READ-ONLY MODE (Service-level @readonly):
+// - Le navigation properties (autori, copie) sono marcate @readonly a livello di servizio
+// - Questo disabilita completamente inline create, update, delete nelle tabelle dei facets
 // - Gli utenti devono usare le app dedicate (Autori, Copie) per modifiche
 // - Questo previene modifiche accidentali alle entità correlate da Titoli app
+// - Vedi srv/biblioteca-service.cds per l'implementazione @readonly
 // =============================================================================
 
 annotate service.TitoliAutori with @(
