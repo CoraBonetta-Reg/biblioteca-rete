@@ -61,6 +61,26 @@ service BibliotecaService {
 }
 
 // =============================================================================
+// NAVIGATION RESTRICTIONS FOR READ-ONLY ASSOCIATIONS
+// =============================================================================
+// Disable inline create, update, delete for navigation properties in Titoli
+// Users must use dedicated Autori and Copie apps for modifications
+// =============================================================================
+
+annotate BibliotecaService.Titoli with {
+  autori @Capabilities : {
+    InsertRestrictions : {Insertable : false},
+    UpdateRestrictions : {Updatable : false},
+    DeleteRestrictions : {Deletable : false}
+  };
+  copie @Capabilities : {
+    InsertRestrictions : {Insertable : false},
+    UpdateRestrictions : {Updatable : false},
+    DeleteRestrictions : {Deletable : false}
+  };
+};
+
+// =============================================================================
 // FIELD LABELS WITH i18n
 // =============================================================================
 // Pattern: @title: '{i18n>key}' per tutte le label

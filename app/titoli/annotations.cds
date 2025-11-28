@@ -179,6 +179,14 @@ annotate service.Titoli with @(
 // - TitoliAutori appare sia in Titoli app che in Autori app
 // - Ogni app può avere colonne diverse → serve qualificatore
 // - Senza qualificatore: conflitti se configurazioni diverse
+//
+// READ-ONLY MODE (Service-level NavigationRestrictions):
+// - Le navigation properties (autori, copie) hanno Capabilities.NavigationRestrictions
+//   applicate a livello di servizio con qualifiers #autori e #copie
+// - Questo disabilita completamente inline create, update, delete nelle tabelle dei facets
+// - Gli utenti devono usare le app dedicate (Autori, Copie) per modifiche
+// - Questo previene modifiche accidentali alle entità correlate da Titoli app
+// - Vedi srv/biblioteca-service.cds per l'implementazione NavigationRestrictions
 // =============================================================================
 
 annotate service.TitoliAutori with @(
