@@ -166,7 +166,19 @@ annotate service.Titoli with @(
             Target : 'copie/@UI.LineItem#Copie',
         },
     ]
-);
+) {
+    // Restrict inline operations on navigation properties
+    autori @Capabilities : {
+        InsertRestrictions : {Insertable : false},
+        UpdateRestrictions : {Updatable : false},
+        DeleteRestrictions : {Deletable : false}
+    };
+    copie @Capabilities : {
+        InsertRestrictions : {Insertable : false},
+        UpdateRestrictions : {Updatable : false},
+        DeleteRestrictions : {Deletable : false}
+    };
+};
 
 // =============================================================================
 // QUALIFIED LINEITEM: Tabelle Correlate nei Facets
@@ -180,8 +192,10 @@ annotate service.Titoli with @(
 // - Ogni app può avere colonne diverse → serve qualificatore
 // - Senza qualificatore: conflitti se configurazioni diverse
 //
-// READ-ONLY MODE:
-// - UI.CreateHidden, UI.UpdateHidden, UI.DeleteHidden disabilitano editing inline
+// READ-ONLY MODE (Capabilities Restrictions):
+// - Capabilities.InsertRestrictions, UpdateRestrictions, DeleteRestrictions
+//   sono applicate alle navigation properties (autori, copie) in Titoli entity
+// - Questo disabilita inline create, update, delete nelle tabelle dei facets
 // - Gli utenti devono usare le app dedicate (Autori, Copie) per modifiche
 // - Questo previene modifiche accidentali alle entità correlate da Titoli app
 // =============================================================================
@@ -203,11 +217,7 @@ annotate service.TitoliAutori with @(
             Label : 'Ruolo',
             Value : ruolo,
         },
-    ],
-    // Disable inline create, update and delete operations in Titoli app
-    UI.CreateHidden #Autori : true,
-    UI.UpdateHidden #Autori : true,
-    UI.DeleteHidden #Autori : true
+    ]
 ) {
     autore @Common.ValueList : {
         Label: 'Autori',
@@ -243,11 +253,7 @@ annotate service.Copie with @(
             Label : 'Ubicazione',
             Value : ubicazione,
         },
-    ],
-    // Disable inline create, update and delete operations in Titoli app
-    UI.CreateHidden #Copie : true,
-    UI.UpdateHidden #Copie : true,
-    UI.DeleteHidden #Copie : true
+    ]
 ) {
     biblioteca @Common.ValueList : {
         Label: 'Biblioteche',
