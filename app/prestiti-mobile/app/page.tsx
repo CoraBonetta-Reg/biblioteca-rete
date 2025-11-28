@@ -53,7 +53,7 @@ export default function Home() {
 
   // Load libraries on mount
   useEffect(() => {
-    fetch(`${API_BASE}/rest/biblioteche`)
+    fetch(`${API_BASE}/rest/prestiti-mobile/getBiblioteche`)
       .then((res) => res.json())
       .then((data) => setBiblioteche(data))
       .catch((err) => setError('Errore nel caricamento delle biblioteche'));
@@ -65,7 +65,7 @@ export default function Home() {
       setLoadingCopie(true);
       setCopieDisponibili([]);
       setCopiaSelezionata('');
-      fetch(`${API_BASE}/rest/copie-disponibili?bibliotecaId=${bibliotecaOrigine}`)
+      fetch(`${API_BASE}/rest/prestiti-mobile/getCopieDisponibili?bibliotecaId=${bibliotecaOrigine}`)
         .then((res) => res.json())
         .then((data) => {
           setCopieDisponibili(data);
@@ -98,7 +98,7 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE}/rest/prestiti`, {
+      const response = await fetch(`${API_BASE}/rest/prestiti-mobile/creaPrestito`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

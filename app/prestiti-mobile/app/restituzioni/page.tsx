@@ -57,7 +57,7 @@ export default function RestituzioniPage() {
 
   // Load libraries on mount
   useEffect(() => {
-    fetch(`${API_BASE}/rest/biblioteche`)
+    fetch(`${API_BASE}/rest/prestiti-mobile/getBiblioteche`)
       .then((res) => res.json())
       .then((data) => setBiblioteche(data))
       .catch((err) => setError('Errore nel caricamento delle biblioteche'));
@@ -69,7 +69,7 @@ export default function RestituzioniPage() {
       setLoadingPrestiti(true);
       setPrestitiAttivi([]);
       setPrestitoSelezionato('');
-      fetch(`${API_BASE}/rest/prestiti-attivi?bibliotecaId=${bibliotecaSelezionata}`)
+      fetch(`${API_BASE}/rest/prestiti-mobile/getPrestitiAttivi?bibliotecaId=${bibliotecaSelezionata}`)
         .then((res) => res.json())
         .then((data) => {
           setPrestitiAttivi(data);
@@ -97,7 +97,7 @@ export default function RestituzioniPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE}/rest/restituisci`, {
+      const response = await fetch(`${API_BASE}/rest/prestiti-mobile/restituisci`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ export default function RestituzioniPage() {
         setPrestitoSelezionato('');
         // Reload active loans
         if (bibliotecaSelezionata) {
-          const res = await fetch(`${API_BASE}/rest/prestiti-attivi?bibliotecaId=${bibliotecaSelezionata}`);
+          const res = await fetch(`${API_BASE}/rest/prestiti-mobile/getPrestitiAttivi?bibliotecaId=${bibliotecaSelezionata}`);
           const updatedData = await res.json();
           setPrestitiAttivi(updatedData);
         }
