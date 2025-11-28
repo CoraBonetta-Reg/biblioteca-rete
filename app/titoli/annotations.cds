@@ -198,7 +198,11 @@ annotate service.TitoliAutori with @(
             Label : 'Ruolo',
             Value : ruolo,
         },
-    ]
+    ],
+    // Disable inline create, update and delete operations in Titoli app
+    UI.CreateHidden #Autori : true,
+    UI.UpdateHidden #Autori : true,
+    UI.DeleteHidden #Autori : true
 ) {
     autore @Common.ValueList : {
         Label: 'Autori',
@@ -234,7 +238,11 @@ annotate service.Copie with @(
             Label : 'Ubicazione',
             Value : ubicazione,
         },
-    ]
+    ],
+    // Disable inline create, update and delete operations in Titoli app
+    UI.CreateHidden #Copie : true,
+    UI.UpdateHidden #Copie : true,
+    UI.DeleteHidden #Copie : true
 ) {
     biblioteca @Common.ValueList : {
         Label: 'Biblioteche',
