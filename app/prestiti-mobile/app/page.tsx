@@ -22,7 +22,8 @@ import {
   Toolbar,
   SelectChangeEvent,
 } from '@mui/material';
-import { LocalLibrary, Send } from '@mui/icons-material';
+import { LocalLibrary, Send, AssignmentReturn } from '@mui/icons-material';
+import Link from 'next/link';
 
 interface Biblioteca {
   ID: string;
@@ -134,9 +135,14 @@ export default function Home() {
       <AppBar position="static" elevation={0}>
         <Toolbar>
           <LocalLibrary sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div">
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Prestiti Interbibliotecari
           </Typography>
+          <Link href="/restituzioni" passHref style={{ textDecoration: 'none' }}>
+            <Button color="inherit" startIcon={<AssignmentReturn />}>
+              Restituzioni
+            </Button>
+          </Link>
         </Toolbar>
       </AppBar>
 

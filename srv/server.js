@@ -179,6 +179,142 @@ cds.on('bootstrap', app => {
       });
     }
   });
+  
+  // GET /rest/prestiti-attivi - Get active loans for a specific library
+  app.get('/rest/prestiti-attivi', async (req, res) => {
+    try {
+      const bibliotecaId = req.query.bibliotecaId;
+      
+      if (!bibliotecaId) {
+        return res.status(400).json({ error: 'Parameter bibliotecaId is required' });
+      }
+      
+      const db = await cds.connect.to('db');
+      const { PrestitiInterbiblioteca, Copie, TitoliAutori } = db.entities('biblioteca.rete');
+      
+      // Query active loans where the library is the destination
+      const prestiti = await SELECT.from(PrestitiInterbiblioteca)
+        .where({ 
+          bibliotecaDestinazione_ID: bibliotecaId,
+          stato: { in: ['richiesto', 'approvato', 'in_transito', 'ricevuto'] }
+        })
+        .columns('ID', 'numeroPrestito', 'copia_ID', 'bibliotecaOrigine_ID', 'stato');
+      
+      // Enrich with copy and title information
+      const prestitiArricchiti = [];
+      for (const prestito of prestiti) {
+        const copia = await SELECT.one.from(Copie, ['ID', 'numeroInventario', 'titolo_ID', 'biblioteca_ID'])
+          .where({ ID: prestito.copia_ID });
+        
+        if (copia && copia.titolo_ID) {
+          // Get title information
+          const titolo = await SELECT.one.from('biblioteca.rete.Titoli')
+            .where({ ID: copia.titolo_ID })
+            .columns('ID', 'titolo');
+          
+          // Get authors for this title
+          const titoliAutori = await SELECT.from(TitoliAutori)
+            .where({ 'titolo_ID': copia.titolo_ID });
+          
+          const autori = [];
+          for (const ta of titoliAutori) {
+            const autore = await SELECT.one.from('biblioteca.rete.Autori')
+              .where({ ID: ta.autore_ID })
+              .columns('cognome', 'nome');
+            if (autore) {
+              autori.push(autore.cognome);
+            }
+          }
+          
+          // Get origin library name
+          const bibliotecaOrigine = await SELECT.one.from('biblioteca.rete.Biblioteche')
+            .where({ ID: prestito.bibliotecaOrigine_ID })
+            .columns('nome', 'citta');
+          
+          prestitiArricchiti.push({
+            ID: prestito.ID,
+            numeroPrestito: prestito.numeroPrestito,
+            copiaID: copia.ID,
+            numeroInventario: copia.numeroInventario,
+            titoloLibro: titolo?.titolo || 'N/A',
+            autoreLibro: autori.join(', ') || 'N/A',
+            bibliotecaOrigine: bibliotecaOrigine ? `${bibliotecaOrigine.nome} - ${bibliotecaOrigine.citta}` : 'N/A',
+            stato: prestito.stato
+          });
+        }
+      }
+      
+      res.json(prestitiArricchiti);
+    } catch (error) {
+      console.error('Error fetching active loans:', error);
+      res.status(500).json({ error: 'Errore nel caricamento dei prestiti attivi' });
+    }
+  });
+  
+  // POST /rest/restituisci - Return a loaned copy
+  app.post('/rest/restituisci', async (req, res) => {
+    try {
+      const { prestitoID } = req.body;
+      
+      // Validate input
+      if (!prestitoID) {
+        return res.status(400).json({
+          success: false,
+          message: 'Dati mancanti: prestitoID è obbligatorio'
+        });
+      }
+      
+      const db = await cds.connect.to('db');
+      const { PrestitiInterbiblioteca, Copie } = db.entities('biblioteca.rete');
+      
+      // Verify the loan exists and is active
+      const prestito = await SELECT.one.from(PrestitiInterbiblioteca)
+        .where({ ID: prestitoID })
+        .columns('ID', 'stato', 'copia_ID', 'numeroPrestito');
+      
+      if (!prestito) {
+        return res.status(404).json({
+          success: false,
+          message: 'Prestito non trovato'
+        });
+      }
+      
+      if (prestito.stato === 'restituito') {
+        return res.status(400).json({
+          success: false,
+          message: 'Il prestito è già stato restituito'
+        });
+      }
+      
+      const oggi = new Date();
+      
+      // Update loan status to 'restituito'
+      await UPDATE(PrestitiInterbiblioteca)
+        .set({ 
+          stato: 'restituito',
+          dataRestituzioneEffettiva: oggi.toISOString().split('T')[0]
+        })
+        .where({ ID: prestitoID });
+      
+      // Update copy status back to 'disponibile'
+      await UPDATE(Copie)
+        .set({ stato: 'disponibile' })
+        .where({ ID: prestito.copia_ID });
+      
+      res.json({
+        success: true,
+        message: 'Prestito restituito con successo',
+        numeroPrestito: prestito.numeroPrestito
+      });
+      
+    } catch (error) {
+      console.error('Error returning loan:', error);
+      res.status(500).json({
+        success: false,
+        message: `Errore durante la restituzione del prestito: ${error.message}`
+      });
+    }
+  });
 });
 
 module.exports = cds.server;
