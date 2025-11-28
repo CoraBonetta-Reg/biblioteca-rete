@@ -49,7 +49,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4004';
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
   // Load libraries on mount
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function Home() {
       .then((res) => res.json())
       .then((data) => setBiblioteche(data))
       .catch((err) => setError('Errore nel caricamento delle biblioteche'));
-  }, [API_BASE]);
+  }, []);
 
   // Load available copies when source library changes
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function Home() {
       setCopieDisponibili([]);
       setCopiaSelezionata('');
     }
-  }, [bibliotecaOrigine, API_BASE]);
+  }, [bibliotecaOrigine]);
 
   const handleSubmit = async () => {
     setError(null);
