@@ -179,6 +179,11 @@ annotate service.Titoli with @(
 // - TitoliAutori appare sia in Titoli app che in Autori app
 // - Ogni app può avere colonne diverse → serve qualificatore
 // - Senza qualificatore: conflitti se configurazioni diverse
+//
+// READ-ONLY MODE:
+// - UI.CreateHidden, UI.UpdateHidden, UI.DeleteHidden disabilitano editing inline
+// - Gli utenti devono usare le app dedicate (Autori, Copie) per modifiche
+// - Questo previene modifiche accidentali alle entità correlate da Titoli app
 // =============================================================================
 
 annotate service.TitoliAutori with @(
