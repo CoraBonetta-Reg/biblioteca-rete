@@ -18,7 +18,8 @@
     "watch-biblioteche": "cds watch --open biblioteca.rete.biblioteche/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-copie": "cds watch --open biblioteca.rete.copie/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-case-editrici": "cds watch --open biblioteca.rete.caseeditrici/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-categorie": "cds watch --open biblioteca.rete.categorie/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-categorie": "cds watch --open biblioteca.rete.categorie/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "dev-mobile": "cd app/prestiti-mobile && npm run dev"
   },
   "private": true,
   "workspaces": [
